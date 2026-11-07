@@ -3,20 +3,55 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>الجود بالموجود</title>
+<title>Al-Jood bil-Mawjood - الجود بالموجود</title>
 <style>
-body{margin:0;font-family:system-ui;background:#FFF7ED;text-align:center}
-header{background:#7C2D12;color:#fff;padding:24px}
-input{width:90%;padding:14px;margin:14px;border-radius:12px;border:2px solid #FDBA74}
-.card{background:#fff;margin:12px;padding:16px;border-radius:16px;text-align:right}
+*{box-sizing:border-box} body{margin:0;font-family:system-ui;background:#FFFBF5;color:#1C1917}
+.top{background:#fff;padding:20px 16px 12px;text-align:center;border-bottom:1px solid #FDE68A}
+.top h1{margin:0;font-size:22px} .top h1 span{color:#EA580C}
+.top p{margin:6px 0;color:#78716C;font-size:13px}
+.search{display:flex;gap:8px;padding:14px;background:#fff}
+.search input{flex:1;padding:14px;border-radius:12px;border:1px solid #E7E5E4;font-size:15px}
+.search button{background:#EA580C;color:#fff;border:0;padding:0 20px;border-radius:12px;font-weight:700}
+.wrap{padding:14px} .sec{font-weight:800;margin:14px 0 8px}
+.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.item{background:#fff;border:2px solid #F5F5F4;border-radius:14px;padding:10px;text-align:center;cursor:pointer}
+.item.active{border-color:#EA580C;background:#FFF7ED}
+.item .qty{background:#F97316;color:#fff;font-size:11px;padding:2px 7px;border-radius:20px}
+.item b{display:block;margin-top:6px;font-size:13px}
+.bar{position:fixed;bottom:0;left:0;right:0;background:#fff;padding:12px;border-top:1px solid #eee;display:flex;gap:10px}
+.bar button{flex:1;padding:15px;border-radius:12px;border:0;font-weight:800;font-size:16px}
+.bar .sug{background:#EA580C;color:#fff}
+.card{background:#fff;border-radius:16px;padding:14px;margin-bottom:12px}
+.card h3{margin:0 0 6px} .tag{color:#EA580C;font-size:12px;font-weight:700}
 </style>
 </head>
 <body>
-<header><h1>الجود بالموجود</h1><p>100 وصفة عراقية موصلية اصلية</p></header>
-<input placeholder="دور على وصفة...">
-<div class="card"><h3>1. تشريب لحم موصلي</h3><p><b>المقادير:</b> 500g لحم قطع كبيرة، 2 خبز تنور، 1 كوب حمص، 2 بصل، 2 نومي بصرة</p><p><b>الطريقة:</b> نسلق اللحم مع البصل والنومي، نضيف الحمص، نصب فوق الخبز.</p></div>
-<div class="card"><h3>2. كبة عروك</h3><p><b>المقادير:</b> 300g لحم مثروم ناعم هو الاساس، 2 بتيتة مبروشة، معدنوس، بصل</p><p><b>الطريقة:</b> نخلط ونعجن ونشكل اقراص ونقلي.</p></div>
-<div class="card"><h3>3. دولمة موصلية</h3><p>ورق عنب، تمن، لحم مثروم، خضرة - تحشى وتصفط بالجدر وتطبخ على نار هادية.</p></div>
-<div class="card"><h3>4. تشريب دجاج</h3><p>دجاج، خبز تنور، حمص، بصل، نومي بصرة.</p></div>
+<div class="top">
+<h1><span>Al-Jood bil-Mawjood</span> - الجود بالموجود</h1>
+<p>Iraqi Recipes • Cook with what you have • وصفات عراقية بمكوناتك المتوفرة</p>
+</div>
+<div class="search"><input id="q" placeholder="Search ingredients, recipe, or dish... / دور على وصفة..."><button onclick="search()">Search</button></div>
+<div class="wrap">
+<div class="sec">شنو عندك بالبيت؟ / What do you have?</div>
+<div class="grid" id="ings"></div>
+<div class="sec">وصفات مقترحة / Suggested Recipes</div>
+<div id="recipes"></div>
+<div style="height:80px"></div>
+</div>
+<div class="bar"><button id="count">0 مكونات مختارة • 0 Selected</button><button class="sug" onclick="suggest()">اقتراح وصفة / Suggest Recipe</button></div>
+<script>
+let ings=[["طماطم","1 pc","🍅"],["بصل","2 pcs","🧅"],["بيض","3 pcs","🥚"],["رز","1 cup","🍚"],["دجاج","500g","🍗"],["لحم مثروم","300g","🥩"],["لحم قطع كبيرة","500g","🥩"],["بتيتة","2 pcs","🥔"],["ثوم","3 cloves","🧄"],["معدنوس","1 bunch","🌿"],["خبز تنور","2 pcs","🫓"],["حمص","1 cup","🫘"]];
+let sel=new Set();
+let recipes=[{n:"تشريب لحم موصلي",u:"Uses 3 ingredients from your stock",d:"500g لحم قطع كبيرة، 2 خبز تنور، 1 كوب حمص، 2 بصل، 2 نومي بصرة - نسلق اللحم مع البصل والنومي، نضيف الحمص، نصب فوق الخبز."},{n:"كبة عروك",u:"Uses 3 ingredients from your stock",d:"300g لحم مثروم ناعم هو الاساس، 2 بتيتة مبروشة، معدنوس، بصل - نخلط ونعجن ونشكل اقراص ونقلي."},{n:"دولمة موصلية",u:"Uses 2 ingredients from your stock",d:"ورق عنب، تمن، لحم مثروم، خضرة - تحشى وتصفط بالجدر وتطبخ على نار هادية."}];
+function render(){
+document.getElementById("ings").innerHTML=ings.map((x,i)=>`<div class="item ${sel.has(i)?"active":""}" onclick="toggle(${i})"><span class="qty">${x[1]}</span><div style="font-size:28px">${x[2]}</div><b>${x[0]}</b></div>`).join("");
+document.getElementById("recipes").innerHTML=recipes.map(r=>`<div class="card"><span class="tag">${r.u}</span><h3>${r.n}</h3><p>${r.d}</p></div>`).join("");
+document.getElementById("count").innerText=sel.size+" مكونات مختارة • "+sel.size+" Selected";
+}
+function toggle(i){sel.has(i)?sel.delete(i):sel.add(i);render()}
+function suggest(){alert("عندك "+sel.size+" مكونات - جرب تشريب لحم موصلي!")}
+function search(){let v=document.getElementById("q").value;alert("دورت على: "+v)}
+render();
+</script>
 </body>
 </html>
