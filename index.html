@@ -21,8 +21,10 @@
 .item.active{border-color:#EA580C;background:#FFF7ED}
 .item .qty{background:#F97316;color:#fff;font-size:11px;padding:2px 7px;border-radius:20px}
 .item b{display:block;margin-top:6px;font-size:13px}
-.card{background:#fff;border-radius:16px;overflow:hidden;margin-bottom:12px;border:1px solid #F5F5F4;cursor:pointer}
+.card{background:#fff;border-radius:16px;overflow:hidden;margin-bottom:12px;border:1px solid #F5F5F4;cursor:pointer;position:relative}
 .card img{width:100%;height:150px;object-fit:cover;display:block}
+.heart{position:absolute;top:10px;left:10px;background:#fff;border:0;width:42px;height:42px;border-radius:50%;font-size:22px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.heart.active{background:#FEE2E2}
 .cardBody{padding:14px}
 .card h3{margin:0 0 6px} .tag{color:#EA580C;font-size:12px;font-weight:700}
 .match{font-weight:800;color:#16A34A;font-size:13px}
@@ -37,17 +39,20 @@
 .modalBox h2{margin:12px 0 8px} .close{background:#eee;border:0;padding:10px 16px;border-radius:10px;font-weight:700;float:left;margin:10px}
 .step{background:#FFFBF5;border-radius:12px;padding:10px;margin:8px 0}
 .badge{display:inline-block;background:#DCFCE7;color:#166534;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;margin:2px}
+.sugCard{display:flex;gap:12px;background:#FFFBF5;border-radius:12px;padding:10px;margin:10px 0;cursor:pointer}
+.sugCard img{width:80px;height:80px;border-radius:10px;object-fit:cover}
 </style>
 </head>
 <body>
-<div class="top"><h1><span>Al-Jood bil-Mawjood</span> - الجود بالموجود</h1><p>Iraqi + World + Healthy • 85 مكون • 40 وصفة • صور حقيقية</p></div>
-<div class="search"><input id="q" oninput="render()" placeholder="Search ingredients, recipe, or dish..."><button onclick="render()">Search</button></div>
+<div class="top"><h1><span>Al-Jood bil-Mawjood</span> - الجود بالموجود</h1><p>85 مكون • 40 وصفة • صور + مفضلة ❤️ + اقتراح مصلح</p></div>
+<div class="search"><input id="q" oninput="render()" placeholder="Search ingredients, recipe..."><button onclick="render()">Search</button></div>
 <div class="wrap">
 <div class="sec">شنو عندك بالبيت؟ - 85 مكون</div>
 <div class="grid" id="ings"></div>
-<div class="sec">وصفات مقترحة - اضغط على أي أكلة لتشوف وصفتها وصورتها</div>
+<div class="sec">وصفات مقترحة - مرتبة حسب مكوناتك - اضغط على أي أكلة لتشوف مقاديرها</div>
 <div class="filters">
 <button class="active" onclick="setF('الكل',this)">الكل (40)</button>
+<button onclick="setF('مفضلة',this)">مفضلتي ❤️</button>
 <button onclick="setF('عراقي',this)">عراقي 🇮🇶</button>
 <button onclick="setF('عالمي',this)">عالمي 🌍</button>
 <button onclick="setF('صحي',this)">صحي 🥗</button>
@@ -55,11 +60,12 @@
 </div>
 <div id="recipes" style="margin-top:12px"></div>
 </div>
-<div class="bar"><button id="count">0 Selected</button><button class="sug" onclick="suggest()">اقتراح وصفة / Suggest Recipe</button></div>
+<div class="bar"><button id="count">0 Selected</button><button class="sug" onclick="suggest()">اقتراح وصفة</button></div>
 <div class="modal" id="modal" onclick="if(event.target==this)closeModal()"><div class="modalBox"><button class="close" onclick="closeModal()">✕ إغلاق</button><div id="modalContent"></div></div></div>
 <script>
 let ings=[["طماطم","1 pc","🍅"],["بصل","2 pcs","🧅"],["بيض","3 pcs","🥚"],["رز","1 cup","🍚"],["دجاج","500g","🍗"],["لحم مثروم","300g","🥩"],["لحم قطع","500g","🥩"],["بتيتة","2 pcs","🥔"],["ثوم","3 cloves","🧄"],["معدنوس","1 bunch","🌿"],["خبز تنور","2 pcs","🫓"],["حمص","1 cup","🫘"],["معكرونة","500g","🍝"],["جبن موزاريلا","200g","🧀"],["حليب","1 cup","🥛"],["طحين","2 cup","🌾"],["زيت زيتون","2 tbsp","🫒"],["فلفل","1 pc","🫑"],["جزر","2 pcs","🥕"],["ذرة","1 cup","🌽"],["فاصوليا","1 cup","🫛"],["عدس","1 cup","🍲"],["شوفان","1 cup","🥣"],["موز","2 pcs","🍌"],["تفاح","2 pcs","🍎"],["شوكولاتة","100g","🍫"],["سكر","1 cup","🧂"],["زبدة","100g","🧈"],["كريمة","1 cup","🍶"],["صلصة طماطم","1 cup","🥫"],["صويا صوص","2 tbsp","🍶"],["زنجبيل","1 pc","🫚"],["ليمون","1 pc","🍋"],["خيار","2 pcs","🥒"],["سبانخ","1 bunch","🥬"],["فطر","200g","🍄"],["روبيان","300g","🍤"],["تونة","1 علبة","🐟"],["خبز تورتيلا","4 pcs","🌮"],["خبز برغر","4 pcs","🍔"],["أفوكادو","1 pc","🥑"],["عسل","2 tbsp","🍯"],["قرفة","1 tsp","✨"],["كمون","1 tsp","✨"],["كركم","1 tsp","✨"],["لبن","1 cup","🥛"],["خس","1 pc","🥬"],["برغل","1 cup","🌾"],["سميد","1 cup","🌾"],["طحينة","3 tbsp","🥜"],["باذنجان","2 pcs","🍆"],["بامية","300g","🌱"],["كوسا","3 pcs","🥒"],["قرنبيط","1 pc","🥦"],["بطاطا حلوة","2 pcs","🍠"],["فلفل حار","2 pcs","🌶️"],["زيتون","1 cup","🫒"],["جبن عرب","200g","🧀"],["قشطة","1 علبة","🍶"],["تمر","10 pcs","🌴"],["دبس رمان","2 tbsp","🍇"],["هيل","1 tsp","✨"],["بابريكا","1 tsp","🌶️"],["زعتر","1 tsp","🌿"],["نعناع","1 bunch","🌿"],["كرفس","1 bunch","🥬"],["لوز","50g","🥜"],["جوز","50g","🥜"],["فستق","50g","🥜"],["كاكاو","2 tbsp","🍫"],["فانيلا","1 tsp","🍦"],["خميرة","1 tsp","🍞"],["بيكنج باودر","1 tsp","✨"],["معجون طماطم","2 tbsp","🥫"],["مرقة دجاج","1 مكعب","🍲"],["شعيرية","100g","🍜"],["نودلز","250g","🍜"],["باقلاء","1 cup","🫛"],["كشمش","50g","🍇"],["جوزة الطيب","1 tsp","✨"],["كزبرة","1 bunch","🌿"],["شبت","1 bunch","🌿"],["ريحان","1 bunch","🌿"],["سلمون","300g","🐟"],["ستيك","300g","🥩"]];
 let sel=new Set(); let curF="الكل";
+let favs=JSON.parse(localStorage.getItem("favs")||"[]");
 let img=(id)=>"https://images.unsplash.com/"+id+"?w=800&q=80&auto=format&fit=crop";
 let recipes=[
 {n:"تشريب لحم موصلي",c:"عراقي",emoji:"🍲",time:"60 دقيقة",cal:"450 سعرة",img:img("photo-1547592166-23ac45744acd"),need:["لحم قطع","خبز تنور","حمص","بصل"],steps:["نسلق اللحم مع البصل والنومي بصرة 45 دقيقة","نضيف الحمص 15 دقيقة","نكسر الخبز بالصحن","نصب المرق واللحم فوق الخبز"]},
@@ -74,63 +80,4 @@ let recipes=[
 {n:"تمن باقلاء",c:"عراقي",emoji:"🍚",time:"40 دقيقة",cal:"440 سعرة",img:img("photo-1516684732162-798a0062be99"),need:["رز","باقلاء","شبت","زبدة"],steps:["نسلق الباقلاء","نطبخ الرز مع الشبت","نخلط الكل مع زبدة"]},
 {n:"معكرونة إيطالية",c:"عالمي",emoji:"🍝",time:"25 دقيقة",cal:"480 سعرة",img:img("photo-1621996346565-e3dbc646d9a9"),need:["معكرونة","صلصة طماطم","ثوم","زيت زيتون","جبن موزاريلا"],steps:["نسلق المعكرونة","نحمس الثوم بالزيت","نضيف الصلصة","نخلط ونرش جبن"]},
 {n:"بيتزا مارغريتا",c:"عالمي",emoji:"🍕",time:"35 دقيقة",cal:"550 سعرة",img:img("photo-1574071318508-1cdbab80d002"),need:["طحين","طماطم","جبن موزاريلا","زيت زيتون"],steps:["نعجن الطحين","نفرد العجينة","نضيف صلصة وجبن","نشوي 15 دقيقة"]},
-{n:"شاورما دجاج",c:"عالمي",emoji:"🥙",time:"25 دقيقة",cal:"430 سعرة",img:img("photo-1529006557810-274b9b2fc783"),need:["دجاج","خبز تورتيلا","ثوم","ليمون"],steps:["نتبل الدجاج","نشوي ونقطع","نلف بالخبز مع صلصة ثوم"]},
-{n:"تاكو مكسيكي",c:"عالمي",emoji:"🌮",time:"20 دقيقة",cal:"410 سعرة",img:img("photo-1565299585323-38d6b0865b47"),need:["لحم مثروم","خبز تورتيلا","طماطم","بصل","أفوكادو"],steps:["نحمس اللحم","نقطع الخضرة","نحشي التورتيلا"]},
-{n:"كاري دجاج هندي",c:"عالمي",emoji:"🍛",time:"35 دقيقة",cal:"460 سعرة",img:img("photo-1585937421612-70a008356fbe"),need:["دجاج","بصل","ثوم","زنجبيل","كركم","كريمة"],steps:["نحمس البصل والبهارات","نضيف الدجاج والكريمة","نطبخ 20 دقيقة"]},
-{n:"رز مقلي آسيوي",c:"عالمي",emoji:"🍚",time:"15 دقيقة",cal:"350 سعرة",img:img("photo-1512058564366-18510be2db19"),need:["رز","بيض","صويا صوص","جزر"],steps:["نقلي البيض","نقلي الجزر والرز","نضيف صويا صوص"]},
-{n:"برغر كلاسيك",c:"عالمي",emoji:"🍔",time:"20 دقيقة",cal:"580 سعرة",img:img("photo-1568901346375-23c9450c58cd"),need:["لحم مثروم","خبز برغر","جبن موزاريلا","طماطم"],steps:["نشكل اللحم اقراص","نشوي","نحشي الخبز"]},
-{n:"أومليت بالجبن",c:"عالمي",emoji:"🍳",time:"10 دقايق",cal:"280 سعرة",img:img("photo-1482049016688-2d3e1b311543"),need:["بيض","جبن موزاريلا","طماطم"],steps:["نخفق البيض","نقلي مع زبدة","نضيف جبن وطماطم"]},
-{n:"كبسة سعودية",c:"عالمي",emoji:"🍛",time:"50 دقيقة",cal:"600 سعرة",img:img("photo-1603133872878-684f208fb84b"),need:["دجاج","رز","طماطم","جزر"],steps:["نحمس الدجاج","نضيف الطماطم والجزر","نضيف الرز ونطبخ"]},
-{n:"مندي يمني",c:"عالمي",emoji:"🍗",time:"60 دقيقة",cal:"620 سعرة",img:img("photo-1598103442097-8b74394b95c6"),need:["دجاج","رز","بصل","هيل","زبدة"],steps:["نتبل الدجاج","نطبخ الرز","نشوي الدجاج فوق الرز"]},
-{n:"مقلوبة",c:"عالمي",emoji:"🍆",time:"50 دقيقة",cal:"520 سعرة",img:img("photo-1540189549336-e6e99c4299bd"),need:["باذنجان","رز","دجاج","بتيتة"],steps:["نقلي الباذنجان والبتيتة","نصفط طبقات","نقلب الجدر ونقدم"]},
-{n:"فلافل",c:"عالمي",emoji:"🧆",time:"30 دقيقة",cal:"350 سعرة",img:img("photo-1593001874117-c99c800e3eb7"),need:["حمص","بصل","ثوم","معدنوس"],steps:["ننقع الحمص","نطحن مع البصل والثوم","نشكل اقراص ونقلي"]},
-{n:"حمص بطحينة",c:"عالمي",emoji:"🥣",time:"15 دقيقة",cal:"280 سعرة",img:img("photo-1577805947697-89e18249d767"),need:["حمص","طحينة","ليمون","ثوم"],steps:["نسلق الحمص","نخلط مع طحينة وليمون","نقدم مع زيت زيتون"]},
-{n:"تبولة",c:"عالمي",emoji:"🥗",time:"15 دقيقة",cal:"180 سعرة",img:img("photo-1546069901-ba9599a7e63c"),need:["برغل","طماطم","معدنوس","ليمون"],steps:["ننقع البرغل","نقطع الطماطم والمعدنوس","نخلط مع ليمون وزيت"]},
-{n:"فتوش",c:"عالمي",emoji:"🥗",time:"10 دقايق",cal:"200 سعرة",img:img("photo-1512621776951-a57141f2eefd"),need:["خس","خيار","طماطم","خبز تنور"],steps:["نقطع الخضرة","نقلي الخبز","نخلط مع دبس رمان"]},
-{n:"باستا ألفريدو",c:"عالمي",emoji:"🍝",time:"20 دقيقة",cal:"580 سعرة",img:img("photo-1473093295043-cdd812d0e601"),need:["معكرونة","كريمة","دجاج","جبن موزاريلا"],steps:["نسلق المعكرونة","نطبخ الدجاج مع الكريمة","نخلط الكل مع جبن"]},
-{n:"نودلز آسيوي",c:"عالمي",emoji:"🍜",time:"15 دقيقة",cal:"380 سعرة",img:img("photo-1585032226651-759b368d7246"),need:["نودلز","صويا صوص","جزر","فلفل"],steps:["نسلق النودلز","نقلي الخضرة","نضيف صويا ونخلط"]},
-{n:"بان كيك بالموز",c:"حلويات",emoji:"🥞",time:"15 دقيقة",cal:"320 سعرة",img:img("photo-1567620905732-2d1ec7ab7445"),need:["طحين","بيض","حليب","موز","سكر"],steps:["نخلط الطحين والبيض والحليب","نهرس الموز","نقلي ونقدم مع عسل"]},
-{n:"كيكة شوكولاتة",c:"حلويات",emoji:"🍫",time:"40 دقيقة",cal:"450 سعرة",img:img("photo-1578985545062-69928b1d9587"),need:["طحين","بيض","سكر","شوكولاتة","زبدة"],steps:["نخلط الطحين والبيض والسكر","نذوب الشوكولاتة","نخبز 30 دقيقة"]},
-{n:"كنافة",c:"حلويات",emoji:"🍮",time:"30 دقيقة",cal:"550 سعرة",img:img("photo-1551024506-0bccd828d307"),need:["شعيرية","جبن عرب","زبدة","سكر"],steps:["نفرك الشعيرية مع زبدة","نحشي بالجبن","نشوي ونسقي شيرة"]},
-{n:"بقلاوة",c:"حلويات",emoji:"🍯",time:"45 دقيقة",cal:"480 سعرة",img:img("photo-1598110750624-207050c4f28c"),need:["طحين","جوز","زبدة","سكر"],steps:["نفرد العجينة طبقات","نحشي بالجوز","نشوي ونسقي شيرة"]},
-{n:"لقيمات",c:"حلويات",emoji:"🍩",time:"25 دقيقة",cal:"380 سعرة",img:img("photo-1551024601-bec78aea704b"),need:["طحين","خميرة","سكر"],steps:["نعجن الطحين","نتركها تختمر","نقلي كرات ونغمس بشيرة"]},
-{n:"مهلبية",c:"حلويات",emoji:"🍮",time:"15 دقيقة",cal:"250 سعرة",img:img("photo-1488477181946-6428a0291777"),need:["حليب","سكر","قشطة"],steps:["نغلي الحليب مع السكر","نضيف نشا","نصب بكاسات ونبرد"]},
-{n:"كريب",c:"حلويات",emoji:"🥞",time:"15 دقيقة",cal:"300 سعرة",img:img("photo-1551024506-0bccd828d307"),need:["طحين","بيض","حليب","سكر"],steps:["نخلط الكل","نقلي بمقلاة رقيقة","نحشي شوكولاتة وموز"]},
-{n:"وافل",c:"حلويات",emoji:"🧇",time:"15 دقيقة",cal:"320 سعرة",img:img("photo-1562376552-0d160a2f238d"),need:["طحين","بيض","حليب","زبدة"],steps:["نخلط الكل","نصب بجهاز الوافل","نقدم مع عسل"]},
-{n:"سلطة سيزر صحية",c:"صحي",emoji:"🥗",time:"10 دقايق",cal:"220 سعرة",img:img("photo-1546069901-ba9599a7e63c"),need:["خس","دجاج","خيار","ليمون","زيت زيتون"],steps:["نقطع الخس والخيار","نشوي الدجاج","نخلط مع ليمون وزيت"]},
-{n:"دجاج مشوي صحي",c:"صحي",emoji:"🍗",time:"30 دقيقة",cal:"280 سعرة",img:img("photo-1598103442097-8b74394b95c6"),need:["دجاج","ليمون","ثوم","زيت زيتون"],steps:["نتبل الدجاج","نتركه 15 دقيقة","نشوي بالفرن 25 دقيقة"]},
-{n:"شوفان بالموز صحي",c:"صحي",emoji:"🥣",time:"5 دقايق",cal:"180 سعرة",img:img("photo-1517673132405-a56a62ea5caf"),need:["شوفان","حليب","موز","عسل","قرفة"],steps:["نغلي الحليب","نضيف الشوفان","نضيف موز وعسل"]},
-{n:"سموذي أخضر صحي",c:"صحي",emoji:"🥤",time:"5 دقايق",cal:"120 سعرة",img:img("photo-1610970881699-44a5587cabec"),need:["موز","سبانخ","تفاح","ليمون","عسل"],steps:["نغسل السبانخ","نخلط الكل بالخلاط","نقدم بارد"]},
-{n:"سمك مشوي صحي",c:"صحي",emoji:"🐟",time:"20 دقيقة",cal:"240 سعرة",img:img("photo-1519708227418-c8fd9a32b7a2"),need:["تونة","ليمون","ثوم","زيت زيتون"],steps:["نتبل السمك","نشوي 10 دقايق كل جهة","نقدم مع سلطة"]},
-{n:"شوربة عدس صحية",c:"صحي",emoji:"🍲",time:"30 دقيقة",cal:"190 سعرة",img:img("photo-1547592166-23ac45744acd"),need:["عدس","جزر","بصل","ثوم","ليمون"],steps:["نحمس البصل والجزر","نضيف العدس","نسلق 25 دقيقة"]},
-{n:"شوربة خضار صحية",c:"صحي",emoji:"🥕",time:"25 دقيقة",cal:"150 سعرة",img:img("photo-1547592180-85f173990554"),need:["جزر","بتيتة","كوسا","بصل"],steps:["نقطع الخضار","نسلق مع مرقة","نخلط ونقدم"]},
-{n:"سلطة يونانية",c:"صحي",emoji:"🥗",time:"10 دقايق",cal:"210 سعرة",img:img("photo-1540189549336-e6e99c4299bd"),need:["طماطم","خيار","زيتون","جبن عرب"],steps:["نقطع الخضرة","نضيف زيتون وجبن","نرش زيت زيتون"]},
-{n:"سلمون مشوي",c:"صحي",emoji:"🐟",time:"20 دقيقة",cal:"300 سعرة",img:img("photo-1467003909585-2f8a72700288"),need:["سلمون","ليمون","ثوم","زيت زيتون"],steps:["نتبل السلمون","نشوي 8 دقايق كل جهة","نقدم مع ليمون"]},
-{n:"صدر دجاج بالخضار",c:"صحي",emoji:"🍗",time:"25 دقيقة",cal:"260 سعرة",img:img("photo-1544025162-d76694265947"),need:["دجاج","فلفل","جزر","قرنبيط"],steps:["نتبل الدجاج","نقلي مع الخضار","نقدم حار"]}
-];
-function getSelNames(){return [...sel].map(i=>ings[i][0])}
-function score(r){let s=getSelNames();let have=r.need.filter(n=>s.includes(n)).length;return {have,total:r.need.length,pct:Math.round(have/r.need.length*100),missing:r.need.filter(n=>!s.includes(n))}}
-function setF(f,btn){curF=f;document.querySelectorAll('.filters button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render()}
-function toggle(i){sel.has(i)?sel.delete(i):sel.add(i);render()}
-function render(){
-let q=(document.getElementById("q").value||"").toLowerCase();
-document.getElementById("ings").innerHTML=ings.map((x,i)=>`<div class="item ${sel.has(i)?"active":""}" onclick="toggle(${i})"><span class="qty">${x[1]}</span><div style="font-size:28px">${x[2]}</div><b>${x[0]}</b></div>`).join("");
-let list=recipes.map((r,idx)=>({...r,idx,...score(r)})).sort((a,b)=>b.pct-a.pct).filter(r=>(curF==="الكل"||r.c===curF)&&(r.n.includes(q)||q===""));
-document.getElementById("recipes").innerHTML=list.map(r=>`<div class="card" onclick="openRecipe(${r.idx})"><img src="${r.img}" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80&auto=format&fit=crop'"><div class="cardBody"><span class="tag">${r.c} • ${r.emoji} • ${r.pct}% مطابق</span><h3>${r.n}</h3><p class="match">عندك ${r.have} من ${r.total} مكونات ${r.missing.length? "• ناقصك: "+r.missing.join("، "):"• كاملة!"}</p><div class="open">اضغط هنا لتشوف الوصفة كاملة 👆</div></div></div>`).join("")||"<p>ما لقينا وصفة</p>";
-document.getElementById("count").innerText=sel.size+" مكونات مختارة • "+sel.size+" Selected";
-}
-function openRecipe(idx){
-let r=recipes[idx]; let s=score(r);
-document.getElementById("modalContent").innerHTML=`<img src="${r.img}"><div class="modalInner"><h2>${r.n}</h2><p><span class="badge">${r.c}</span> <span class="badge">⏱ ${r.time}</span> <span class="badge">🔥 ${r.cal}</span></p><p><b>المكونات المطلوبة:</b><br>${r.need.map(n=>getSelNames().includes(n)?"✅ "+n:"❌ "+n+" - ما عندك").join("<br>")}</p><p><b>طريقة التحضير:</b></p>${r.steps.map((st,i)=>`<div class="step"><b>خطوة ${i+1}:</b> ${st}</div>`).join("")}<p style="text-align:center;color:#16A34A;font-weight:800">${s.missing.length? "ناقصك: "+s.missing.join("، "):"عندك كل المكونات! تكدر تطبخها هسه 🎉"}</p></div>`;
-document.getElementById("modal").style.display="block";
-}
-function closeModal(){document.getElementById("modal").style.display="none"}
-function suggest(){
-if(sel.size===0){alert("اختار مكونات أولاً!");return}
-let best=[...recipes].map((r,idx)=>({...r,idx,...score(r)})).sort((a,b)=>b.pct-a.pct).slice(0,3);
-openRecipe(best[0].idx);
-}
-render();
-</script>
-</body>
-</html>
+{n:"شاورما دجاج",c:"عالمي",emoji:"🥙",time:"25 دقيقة",cal:"430 سعرة",img:img("photo-1529006557810-274b9b2fc783"),need:["دجاج","خبز تورتيلا","ثوم","ليمون
