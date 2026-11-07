@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>notepad</title>
+</head>
+<style type="text/css">
+ol,ul{
+display:block;
+list-style-type:none;
+margin:3px;
+}
+</style><body>
+<div>&lt;!DOCTYPE html&gt;<br>
+&lt;html lang="ar" dir="rtl"&gt;<br>
+&lt;head&gt;<br>
+&lt;meta charset="UTF-8"&gt;<br>
+&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;<br>
+&lt;title&gt;Al-Jood bil-Mawjood - &#1575;&#1604;&#1580;&#1608;&#1583; &#1576;&#1575;&#1604;&#1605;&#1608;&#1580;&#1608;&#1583; | &#1608;&#1589;&#1601;&#1575;&#1578; &#1593;&#1585;&#1575;&#1602;&#1610;&#1577;&lt;/title&gt;<br>
+&lt;meta name="description" content="Iraqi Recipes, &#1608;&#1589;&#1601;&#1575;&#1578; &#1593;&#1585;&#1575;&#1602;&#1610;&#1577;, &#1588;&#1606;&#1608; &#1593;&#1606;&#1583;&#1603; &#1576;&#1575;&#1604;&#1579;&#1604;&#1575;&#1580;&#1577;, Cook with what you have"&gt;<br>
+&lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;<br>
+&lt;link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&amp;display=swap" rel="stylesheet"&gt;<br>
+&lt;style&gt;body{font-family:'IBM Plex Sans Arabic',sans-serif;background:#FFFBF5}&lt;/style&gt;<br>
+&lt;/head&gt;<br>
+&lt;body class="p-4 max-w-md mx-auto"&gt;<br>
+&lt;!-- Header --&gt;<br>
+&lt;div class="flex justify-between items-center py-4"&gt;<br>
+&lt;h1 class="text-2xl font-bold"&gt;&#1575;&#1604;&#1580;&#1608;&#1583; &#1576;&#1575;&#1604;&#1605;&#1608;&#1580;&#1608;&#1583;&lt;br&gt;&lt;span class="text-sm font-normal text-gray-500"&gt;Al-Jood bil-Mawjood&lt;/span&gt;&lt;/h1&gt;<br>
+&lt;div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center"&gt;&#128104;&#8205;&#127859;&lt;/div&gt;<br>
+&lt;/div&gt;<br>
+<br>
+&lt;!-- Search --&gt;<br>
+&lt;div class="bg-white rounded-2xl p-3 shadow flex gap-2 mb-4"&gt;<br>
+&lt;input id="search" placeholder="Search / &#1575;&#1576;&#1581;&#1579; &#1593;&#1606; &#1605;&#1603;&#1608;&#1606; &#1571;&#1608; &#1608;&#1589;&#1601;&#1577;..." class="flex-1 outline-none text-sm bg-transparent"&gt;<br>
+&lt;button onclick="suggest()" class="bg-[#FF8C42] text-white px-4 py-2 rounded-xl text-sm font-bold"&gt;Search &#1576;&#1581;&#1579;&lt;/button&gt;<br>
+&lt;/div&gt;<br>
+<br>
+&lt;!-- Ingredients --&gt;<br>
+&lt;h2 class="font-bold mb-2"&gt;&#1575;&#1604;&#1605;&#1603;&#1608;&#1606;&#1575;&#1578; &#1575;&#1604;&#1605;&#1578;&#1608;&#1601;&#1585;&#1577; &#8226; Available&lt;/h2&gt;<br>
+&lt;div id="ingredients" class="grid grid-cols-2 gap-3 mb-4"&gt;&lt;/div&gt;<br>
+<br>
+&lt;div class="bg-white rounded-xl p-3 flex justify-between items-center mb-4 text-sm"&gt;<br>
+&lt;span id="count"&gt;0 &#1605;&#1603;&#1608;&#1606; &#1605;&#1582;&#1578;&#1575;&#1585; &#8226; 0 Selected&lt;/span&gt;<br>
+&lt;button onclick="suggest()" class="bg-[#FF8C42] text-white px-5 py-2 rounded-xl font-bold"&gt;&#1575;&#1602;&#1578;&#1585;&#1581;&#1604;&#1610; &#1608;&#1589;&#1601;&#1577; / Suggest&lt;/button&gt;<br>
+&lt;/div&gt;<br>
+<br>
+&lt;!-- Recipes --&gt;<br>
+&lt;div id="recipes" class="space-y-3"&gt;&lt;/div&gt;<br>
+<br>
+&lt;script&gt;<br>
+const ings = [<br>
+{id:'egg',ar:'&#1576;&#1610;&#1590;',en:'Eggs',emoji:'&#129370;',qty:'2x'},<br>
+{id:'tomato',ar:'&#1591;&#1605;&#1575;&#1591;&#1577;',en:'Tomato',emoji:'&#127813;',qty:'3x'},<br>
+{id:'onion',ar:'&#1576;&#1589;&#1604;',en:'Onion',emoji:'&#129477;',qty:'1'},<br>
+{id:'rice',ar:'&#1578;&#1605;&#1606;',en:'Rice',emoji:'&#127834;',qty:'1 &#1603;&#1608;&#1576;'},<br>
+{id:'chicken',ar:'&#1583;&#1580;&#1575;&#1580;',en:'Chicken',emoji:'&#127831;',qty:'300g'},<br>
+{id:'meat',ar:'&#1604;&#1581;&#1605;',en:'Meat',emoji:'&#129385;',qty:'300g'},<br>
+{id:'potato',ar:'&#1576;&#1578;&#1610;&#1578;&#1577;',en:'Potato',emoji:'&#129364;',qty:'2x'},<br>
+{id:'yogurt',ar:'&#1604;&#1576;&#1606;',en:'Yogurt',emoji:'&#129371;',qty:'1'},<br>
+];<br>
+<br>
+const recipes = [<br>
+{title:'&#1576;&#1610;&#1590; &#1608;&#1591;&#1605;&#1575;&#1591;',en:'Egg &amp; Tomato',needs:['egg','tomato','onion'],time:'10 &#1583;',desc:'&#1578;&#1581;&#1605;&#1587; &#1575;&#1604;&#1576;&#1589;&#1604;&#1548; &#1578;&#1582;&#1604;&#1610; &#1575;&#1604;&#1591;&#1605;&#1575;&#1591;&#1577;&#1548; &#1608;&#1585;&#1607;&#1575;&#1607;&#1575; &#1575;&#1604;&#1576;&#1610;&#1590;&#1548; &#1588;&#1608;&#1610;&#1577; &#1605;&#1604;&#1581; &#1608;&#1601;&#1604;&#1601;&#1604;&#1548; &#1608;&#1578;&#1575;&#1603;&#1604;&#1607;&#1575; &#1608;&#1610;&#1575; &#1582;&#1576;&#1586; &#1581;&#1575;&#1585;. &#1571;&#1591;&#1610;&#1576; &#1585;&#1610;&#1608;&#1603; &#1576;&#1594;&#1583;&#1575;&#1583;&#1610;!'},<br>
+{title:'&#1578;&#1588;&#1585;&#1610;&#1576; &#1604;&#1581;&#1605;',en:'Tashreeb',needs:['meat','onion','tomato'],time:'60 &#1583;',desc:'&#1578;&#1587;&#1604;&#1602; &#1575;&#1604;&#1604;&#1581;&#1605; &#1608;&#1610;&#1575; &#1575;&#1604;&#1576;&#1589;&#1604;&#1548; &#1578;&#1582;&#1604;&#1610; &#1591;&#1605;&#1575;&#1591;&#1577; &#1608;&#1605;&#1593;&#1580;&#1608;&#1606;&#1548; &#1608;&#1578;&#1588;&#1585;&#1576; &#1575;&#1604;&#1582;&#1576;&#1586; &#1576;&#1575;&#1604;&#1605;&#1585;&#1603;&#1577;. &#1601;&#1608;&#1604;!'},<br>
+{title:'&#1578;&#1605;&#1606; &#1608;&#1576;&#1578;&#1610;&#1578;&#1577;',en:'Rice &amp; Potato',needs:['rice','potato','onion'],time:'25 &#1583;',desc:'&#1578;&#1581;&#1605;&#1587; &#1576;&#1578;&#1610;&#1578;&#1577;&#1548; &#1578;&#1582;&#1604;&#1610; &#1578;&#1605;&#1606; &#1608;&#1605;&#1610; &#1608;&#1605;&#1604;&#1581;&#1548; &#1610;&#1578;&#1607;&#1583;&#1585; &#1608;&#1578;&#1575;&#1603;&#1604;&#1607; &#1608;&#1610;&#1575; &#1604;&#1576;&#1606;.'},<br>
+{title:'&#1583;&#1580;&#1575;&#1580; &#1588;&#1608;&#1610;',en:'Grilled Chicken',needs:['chicken','onion','tomato'],time:'45 &#1583;',desc:'&#1578;&#1578;&#1576;&#1604; &#1575;&#1604;&#1583;&#1580;&#1575;&#1580; &#1576;&#1605;&#1604;&#1581; &#1608;&#1604;&#1610;&#1605;&#1608;&#1606; &#1608;&#1576;&#1589;&#1604; &#1608;&#1591;&#1605;&#1575;&#1591;&#1577;&#1548; &#1608;&#1578;&#1588;&#1608;&#1610;&#1607;.'},<br>
+{title:'&#1576;&#1585;&#1610;&#1575;&#1606;&#1610;',en:'Biryani',needs:['rice','chicken','potato'],time:'50 &#1583;',desc:'&#1578;&#1605;&#1606; &#1576;&#1585;&#1610;&#1575;&#1606;&#1610; &#1593;&#1575;&#1604;&#1605;&#1610;&#1548; &#1608;&#1610;&#1575; &#1575;&#1604;&#1583;&#1580;&#1575;&#1580; &#1608;&#1575;&#1604;&#1576;&#1578;&#1610;&#1578;&#1577; &#1608;&#1575;&#1604;&#1576;&#1607;&#1575;&#1585;&#1575;&#1578;.'},<br>
+{title:'&#1605;&#1585;&#1603;&#1577; &#1576;&#1578;&#1610;&#1578;&#1577;',en:'Potato Stew',needs:['potato','tomato','onion'],time:'30 &#1583;',desc:'&#1605;&#1585;&#1603;&#1577; &#1576;&#1578;&#1610;&#1578;&#1577; &#1581;&#1575;&#1605;&#1590;&#1577; &#1588;&#1608;&#1610;&#1577;&#1548; &#1603;&#1604;&#1588; &#1591;&#1610;&#1576;&#1577; &#1608;&#1610;&#1575; &#1575;&#1604;&#1578;&#1605;&#1606;.'},<br>
+];<br>
+<br>
+let selected = new Set();<br>
+function renderIngs(){<br>
+const c=document.getElementById('ingredients');<br>
+c.innerHTML=ings.map(i=&gt;`<br>
+&lt;div onclick="toggle('${i.id}')" id="ing-${i.id}" class="bg-white rounded-2xl p-3 shadow-sm border-2 border-transparent cursor-pointer relative"&gt;<br>
+&lt;span class="absolute top-2 left-2 bg-orange-100 text-orange-600 text-[10px] px-2 py-1 rounded-full"&gt;${i.qty}&lt;/span&gt;<br>
+&lt;div class="text-3xl text-center my-2"&gt;${i.emoji}&lt;/div&gt;<br>
+&lt;div class="text-center font-bold text-sm"&gt;${i.ar}&lt;br&gt;&lt;span class="text-xs font-normal text-gray-400"&gt;${i.en}&lt;/span&gt;&lt;/div&gt;<br>
+&lt;/div&gt;`).join('');<br>
+}<br>
+function toggle(id){<br>
+if(selected.has(id))selected.delete(id);else selected.add(id);<br>
+document.getElementById('ing-'+id).classList.toggle('border-[#FF8C42]');<br>
+document.getElementById('ing-'+id).classList.toggle('bg-orange-50');<br>
+document.getElementById('count').innerText=`${selected.size} &#1605;&#1603;&#1608;&#1606; &#1605;&#1582;&#1578;&#1575;&#1585; &#8226; ${selected.size} Selected`;<br>
+}<br>
+function suggest(){<br>
+const list = recipes.filter(r=&gt;r.needs.some(n=&gt;selected.has(n))).sort((a,b)=&gt;b.needs.filter(n=&gt;selected.has(n)).length - a.needs.filter(n=&gt;selected.has(n)).length);<br>
+if(list.length==0){document.getElementById('recipes').innerHTML='&lt;div class="text-center p-4 bg-white rounded-xl"&gt;&#1575;&#1582;&#1578;&#1575;&#1585;&#1604;&#1603; &#1603;&#1605; &#1605;&#1603;&#1608;&#1606; &#1601;&#1608;&#1603; &#1581;&#1578;&#1609; &#1575;&#1602;&#1578;&#1585;&#1581;&#1604;&#1603; &#8226; Select ingredients first&lt;/div&gt;';return;}<br>
+document.getElementById('recipes').innerHTML=list.map(r=&gt;{<br>
+const match=r.needs.filter(n=&gt;selected.has(n)).length;<br>
+return `&lt;div class="bg-white rounded-2xl p-4 shadow"&gt;<br>
+&lt;h3 class="font-bold"&gt;${r.title} - ${r.en}&lt;/h3&gt;<br>
+&lt;p class="text-xs text-gray-400 my-1"&gt;${r.time} &#8226; ${match}/${r.needs.length} &#1605;&#1603;&#1608;&#1606; &#1605;&#1578;&#1608;&#1601;&#1585;&lt;/p&gt;<br>
+&lt;p class="text-sm mt-2"&gt;${r.desc}&lt;/p&gt;<br>
+&lt;button class="mt-3 w-full bg-[#FFFBF5] border border-orange-200 text-orange-600 py-2 rounded-xl text-sm"&gt;&#1588;&#1608;&#1601; &#1575;&#1604;&#1591;&#1585;&#1610;&#1602;&#1577; &#1603;&#1575;&#1605;&#1604;&#1577; &#8226; View Recipe&lt;/button&gt;<br>
+&lt;/div&gt;`}).join('');<br>
+}<br>
+renderIngs();suggest();<br>
+&lt;/script&gt;<br>
+&lt;/body&gt;<br>
+&lt;/html&gt;</div>
+</body>
+</html>
